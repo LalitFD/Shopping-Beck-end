@@ -4,6 +4,7 @@ dotenv.config();
 import bcrypt from "bcryptjs";
 import nodemailer from "nodemailer"
 import jwt from "jsonwebtoken";
+import { OAuth2Client } from "google-auth-library";
 
 
 export const login = async (request, response, next) => {
@@ -312,3 +313,39 @@ export const followUser = async (request, response) => {
         return response.status(500).json({ error: "Internal server error" });
     }
 };
+
+
+
+
+// const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+// export const googleLogin = async (req, res) => {
+//     const { token } = req.body;
+
+//     try {
+//         const ticket = await client.verifyIdToken({
+//             idToken: token,
+//             audience: process.env.GOOGLE_CLIENT_ID,
+//         });
+
+//         const payload = ticket.getPayload();
+
+//         const userToken = jwt.sign(
+//             { email: payload.email, name: payload.name },
+//             process.env.secure_key,
+//             { expiresIn: "1d" }
+//         );
+
+//         res.cookie("token", userToken, {
+//             httpOnly: true,
+//             secure: true,
+//             sameSite: "Lax",
+//             maxAge: 24 * 60 * 60 * 1000,
+//         });
+
+//         res.status(200).json({ message: "Google login successful" });
+//     } catch (error) {
+//         console.error("Google Login Error:", error);
+//         res.status(401).json({ message: "Google token invalid" });
+//     }
+// };

@@ -1,7 +1,7 @@
 import express from "express";
 
 
-import { register, login, logOut, userVerified, userProfile, profileUpdate, searchUsers,followUser } from "../controller/user.controller.js";
+import { register, login, logOut, userVerified, userProfile, profileUpdate, searchUsers,followUser} from "../controller/user.controller.js";
 import { auth } from "../middleware/auth.js";
 
 const router = express.Router();
@@ -26,5 +26,7 @@ router.put("/update", auth, profileUpdate);
 router.get("/searchUsers", auth, searchUsers);
 
 router.post("/follow/:id", auth, followUser);
+
+// router.post("/google-login",googleLogin)
 
 export default router;
