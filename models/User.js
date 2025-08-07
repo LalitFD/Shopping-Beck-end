@@ -23,9 +23,8 @@ const userSchema = new mongoose.Schema({
         sparse: true,
         trim: true
     },
-    profilePicture: {
-        type: String,
-        default: ''
+    profile: {
+        imageName: String,
     },
     bio: {
         type: String,

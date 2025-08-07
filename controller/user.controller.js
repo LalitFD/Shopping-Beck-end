@@ -42,6 +42,20 @@ export const login = async (request, response, next) => {
 };
 
 
+export const ProfileUpload = async (request, response, next) => {
+    try {
+        //   const id = request.user._id;
+        let user = await User.findById(request.user._id)
+
+        user.profile.imageName = request.file.filename;
+        user.save();
+        return response.status(201).json({ message: "Profile udpated..." });
+
+    } catch (err) {
+        console.log(err)
+        return response.status(500).json({ error: "internal server errror" })
+    }
+}
 
 export const logOut = async (request, response, next) => {
     try {
@@ -276,10 +290,6 @@ export const searchUsers = async (req, res) => {
         return res.status(500).json({ error: "Internal server error" });
     }
 };
-
-
-
-
 
 
 export const followUser = async (request, response) => {
