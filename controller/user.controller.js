@@ -28,8 +28,8 @@ export const login = async (request, response, next) => {
 
             response.cookie("token", token, {
                 httpOnly: true,
-                secure: false,
-                sameSite: "lax"
+                secure: true,
+                sameSite: "None"
             });
 
             return response.status(200).json({ message: "Login success", token, user })
