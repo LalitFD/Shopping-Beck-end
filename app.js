@@ -20,7 +20,8 @@ mongoose.connect(process.env.URL).then((result) => {
     app.use(cookieParser())
 
     app.use(cors({
-        origin: "https://shopping-front-end-enks.onrender.com",
+        // origin: "https://shopping-front-end-enks.onrender.com",
+        origin: "http://localhost:3001",
         credentials: true,
     }));
 
