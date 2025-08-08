@@ -30,7 +30,7 @@ mongoose.connect(process.env.URL).then(() => {
 
     app.use(cors({
         // origin: "http://localhost:3001",
-        origin: "https:shopping-front-end-enks.onrender.com",
+        origin: "https://shopping-front-end-enks.onrender.com",
 
         credentials: true,
     }));
