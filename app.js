@@ -19,7 +19,6 @@ const app = express();
 
 mongoose.connect(process.env.URL).then(() => {
     app.use('/public', express.static('public'));
-    // app.use('/story', express.static(path.join(__dirname, 'uploads/story')));
 
     app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
@@ -30,7 +29,9 @@ mongoose.connect(process.env.URL).then(() => {
     app.use(cookieParser());
 
     app.use(cors({
-        origin: "http://localhost:3001",
+        // origin: "http://localhost:3001",
+        origin: "https:shopping-front-end-enks.onrender.com",
+
         credentials: true,
     }));
 
