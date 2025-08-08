@@ -1,4 +1,5 @@
 import { Story } from "../models/Story.js";
+import fs from "fs";
 
 
 export const getAllStories = async (req, res) => {
@@ -17,14 +18,21 @@ export const getAllStories = async (req, res) => {
 export const getStoryById = async (req, res) => {
     try {
         const story = await Story.findById(req.params.id)
-            .populate("author", "name email")
-            .populate("viewers.user", "name email");
-
-        if (!story) return res.status(404).json({ error: "Story not found" });
-
+            .populate({
+                path: 'author',
+                select: 'name email username profile',
+                populate: {
+                    path: 'profile'
+                }
+            });
+            
+        if (!story) {
+            return res.status(404).json({ error: "Story not found" });
+        }
+        
         res.status(200).json(story);
     } catch (err) {
-        console.log(err)
+        console.error("Error:", err.message);
         res.status(500).json({ error: "Internal server error" });
     }
 };
@@ -37,14 +45,18 @@ export const createStory = async (req, res) => {
             return res.status(400).json({ error: "No file uploaded" });
         }
 
-        const filePath = `/uploads/${req.file.filename}`;
+        // console.log("File saved at:", req.file.path);
+        // console.log("File exists:", fs.existsSync(req.file.path));
+        // console.log("Filename:", req.file.filename);
+
+        const filePath = `/uploads/story/${req.file.filename}`;
 
         const story = new Story({
             author: req.user._id,
             media: {
                 type,
-                url: filePath,
-                duration: duration || 15
+                duration: duration || 15,
+                url: filePath
             }
         });
 
@@ -52,7 +64,7 @@ export const createStory = async (req, res) => {
         res.status(201).json({ message: "Story created", story: saved });
 
     } catch (err) {
-        console.error(err);
+        console.error("Error:", err.message);
         res.status(500).json({ error: "Internal server error" });
     }
 };
