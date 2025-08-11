@@ -292,35 +292,41 @@ export const searchUsers = async (req, res) => {
 };
 
 
-export const followUser = async (request, response) => {
+
+
+export const followUnfollow = async (req, res) => {
     try {
-        const { userId } = request.params;
-        const currentUserId = request.user._id;
+        const currentUserId = req.user._id; // token se
+        const targetUserId = req.params.id; // params se
 
-        if (userId === currentUserId.toString()) {
-            return response.status(400).json({ message: "You cannot follow yourself" });
+        if (currentUserId.toString() === targetUserId.toString()) {
+            return res.status(400).json({ message: "You can't follow yourself" });
         }
-
-        const userToFollow = await User.findById(userId);
-        if (!userToFollow) {
-            return response.status(404).json({ message: "User not found" });
-        }
-
-        if (userToFollow.followers.includes(currentUserId)) {
-            return response.status(400).json({ message: "You are already following this user" });
-        }
-
-        userToFollow.followers.push(currentUserId);
-        await userToFollow.save();
 
         const currentUser = await User.findById(currentUserId);
-        currentUser.following.push(userId);
-        await currentUser.save();
+        const targetUser = await User.findById(targetUserId);
 
-        return response.status(200).json({ message: "Successfully followed the user", userToFollow });
-    } catch (err) {
-        console.error(err);
-        return response.status(500).json({ error: "Internal server error" });
+        if (!currentUser || !targetUser) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const isFollowing = currentUser.following.includes(targetUserId);
+
+        if (isFollowing) {
+            currentUser.following.pull(targetUserId);
+            targetUser.followers.pull(currentUserId);
+            await currentUser.save();
+            await targetUser.save();
+            return res.json({ message: "Unfollowed successfully" });
+        } else {
+            currentUser.following.push(targetUserId);
+            targetUser.followers.push(currentUserId);
+            await currentUser.save();
+            await targetUser.save();
+            return res.json({ message: "Followed successfully" });
+        }
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
 };
 
@@ -359,3 +365,27 @@ export const followUser = async (request, response) => {
 //         res.status(401).json({ message: "Google token invalid" });
 //     }
 // };
+
+
+
+
+// controller/user.controller.js
+export const getFollowersAndFollowing = async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id)
+            .populate("followers", "name username profile.imageName")
+            .populate("following", "name username profile.imageName");
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        res.json({
+            followers: user.followers,
+            following: user.following
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server error" });
+    }
+};
