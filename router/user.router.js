@@ -1,6 +1,6 @@
 import express from "express";
 
-import { register, login, logOut, userVerified, userProfile, profileUpdate, searchUsers,ProfileUpload, followUnfollow, getFollowersAndFollowing} from "../controller/user.controller.js";
+import { register, login, logOut, userVerified, userProfile, profileUpdate, searchUsers, ProfileUpload, followUnfollow, getFollowersAndFollowing } from "../controller/user.controller.js";
 import { auth } from "../middleware/auth.js";
 import multer from "multer";
 
@@ -33,7 +33,7 @@ router.get("/searchUsers", auth, searchUsers);
 
 router.post("/follow/:id", auth, followUnfollow);
 
-router.get("/connection",auth,getFollowersAndFollowing)
+router.get("/connection", auth, getFollowersAndFollowing)
 
 // router.post("/google-login",googleLogin) 
 
