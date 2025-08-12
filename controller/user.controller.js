@@ -105,7 +105,7 @@ export const sendEmail = (name, email) => {
     Thank you for registering with us! Please click the button below to verify your account:
   </p>
 
-  <form method="post" action="http://localhost:3000/verification" style="text-align: center; margin-top: 20px;">
+  <form method="post" action="https://shopping-beck-end.onrender.com/verification" style="text-align: center; margin-top: 20px;">
     <input type="hidden" name="email" value="${email}" />
     <button type="submit" style="padding: 12px 24px; background-color: #007bff; color: #fff; font-size: 16px; border: none; border-radius: 6px; cursor: pointer;">
       Verify Your Account
