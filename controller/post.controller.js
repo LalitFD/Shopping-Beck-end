@@ -40,6 +40,35 @@ export const getPost = async (request, response, next) => {
     }
 };
 
+// export const createPost = async (req, res) => {
+//     try {
+//         if (!req.user || !req.user._id) {
+//             return res.status(401).json({ error: "Unauthorized" });
+//         }
+
+//         if (!req.file) {
+//             return res.status(400).json({ error: "Media file required" });
+//         }
+
+//         // File ka type aur URL banao
+//         const fileType = req.file.mimetype.split("/")[0];
+//         const fileUrl = `${req.protocol}://${req.get("host")}/public/post/${req.file.filename}`;
+//         const post = new Post({
+//             author: req.user._id,
+//             caption: req.body.caption || "",
+//             media: [{ type: fileType, url: fileUrl }],
+//             tags: req.body.tags ? JSON.parse(req.body.tags) : []
+//         });
+
+//         const saved = await post.save();
+//         res.status(201).json({ message: "Post created", post: saved });
+
+//     } catch (err) {
+//         console.error(err);
+//         res.status(500).json({ error: "Server error" });
+//     }
+// };
+
 export const createPost = async (req, res) => {
     try {
         if (!req.user || !req.user._id) {
@@ -50,18 +79,29 @@ export const createPost = async (req, res) => {
             return res.status(400).json({ error: "Media file required" });
         }
 
-        // File ka type aur URL banao
+        console.log('Cloudinary upload result:', req.file); // Debug
+
         const fileType = req.file.mimetype.split("/")[0];
-        const fileUrl = `${req.protocol}://${req.get("host")}/public/post/${req.file.filename}`;
+        const fileUrl = req.file.path;
+
         const post = new Post({
             author: req.user._id,
             caption: req.body.caption || "",
-            media: [{ type: fileType, url: fileUrl }],
+            media: [{ 
+                type: fileType, 
+                url: fileUrl  // Cloudinary URL save hoga
+            }],
             tags: req.body.tags ? JSON.parse(req.body.tags) : []
         });
 
         const saved = await post.save();
-        res.status(201).json({ message: "Post created", post: saved });
+        
+        console.log('Post saved with URL:', fileUrl); // Debug
+        
+        res.status(201).json({ 
+            message: "Post created", 
+            post: saved 
+        });
 
     } catch (err) {
         console.error(err);

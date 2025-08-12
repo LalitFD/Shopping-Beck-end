@@ -72,7 +72,6 @@ io.on("connection", (socket) => {
     });
 });
 
-// ✅ Connect DB & start server
 mongoose.connect(process.env.URL)
     .then(() => {
         app.use("/", router);
