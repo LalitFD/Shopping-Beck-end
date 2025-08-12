@@ -23,8 +23,8 @@ const app = express();
 const httpServer = createServer(app);
 
 app.use(cors({
-    origin: "http://localhost:3001",
-    // origin: "https://shopping-front-end-enks.onrender.com",
+    // origin: "http://localhost:3001",
+    origin: "https://shopping-front-end-enks.onrender.com",
     credentials: true,
 }));
 app.use(bodyParser.json());
