@@ -54,7 +54,7 @@ const io = new Server(httpServer, {
 const onlineUsers = new Map();
 
 io.on("connection", (socket) => {
-    console.log("✅ User connected:", socket.id);
+    console.log("User connected:", socket.id);
 
     socket.on("register", (userId) => {
         onlineUsers.set(socket.id, userId);
@@ -68,7 +68,7 @@ io.on("connection", (socket) => {
     socket.on("disconnect", () => {
         onlineUsers.delete(socket.id);
         io.emit("online_users", Array.from(new Set(onlineUsers.values())));
-        console.log("❌ User disconnected:", socket.id);
+        console.log("User disconnected:", socket.id);
     });
 });
 
@@ -81,7 +81,7 @@ mongoose.connect(process.env.URL)
         app.use("/Msg", MRouter);
 
         httpServer.listen(process.env.PORT, () => {
-            console.log("🚀 Server + Socket.io started on port", process.env.PORT);
+            console.log("Server + Socket.io started on port", process.env.PORT);
         });
     })
     .catch((err) => {

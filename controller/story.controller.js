@@ -36,7 +36,6 @@ export const getStoryById = async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 };
-
 export const createStory = async (req, res) => {
     try {
         const { type, duration } = req.body;
@@ -56,7 +55,8 @@ export const createStory = async (req, res) => {
                 type: type || fileType,
                 duration: duration || 15,
                 url: fileUrl
-            }
+            },
+            expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000)
         });
 
         const saved = await story.save();
@@ -74,6 +74,7 @@ export const createStory = async (req, res) => {
     }
 };
 
+
 export const deleteStory = async (req, res) => {
     try {
         const story = await Story.findById(req.params.id);
@@ -87,17 +88,18 @@ export const deleteStory = async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 };
-
 export const getStoriesByUser = async (req, res) => {
     try {
         const stories = await Story.find({
-            author: req.params.id,
+            author: req.params.id, 
             expiresAt: { $gt: new Date() }
-        });
+        })
+            .populate("author", "username profilePic email");
 
         res.status(200).json(stories);
     } catch (err) {
-        console.log(err)
+        console.error(err);
         res.status(500).json({ error: "Internal server error" });
     }
 };
+
