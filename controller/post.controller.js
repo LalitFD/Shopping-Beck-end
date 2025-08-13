@@ -79,7 +79,7 @@ export const createPost = async (req, res) => {
             return res.status(400).json({ error: "Media file required" });
         }
 
-        console.log('Cloudinary upload result:', req.file); // Debug
+        console.log('Cloudinary upload result:', req.file); 
 
         const fileType = req.file.mimetype.split("/")[0];
         const fileUrl = req.file.path;
@@ -89,7 +89,7 @@ export const createPost = async (req, res) => {
             caption: req.body.caption || "",
             media: [{ 
                 type: fileType, 
-                url: fileUrl  // Cloudinary URL save hoga
+                url: fileUrl  
             }],
             tags: req.body.tags ? JSON.parse(req.body.tags) : []
         });
@@ -150,7 +150,6 @@ export const getLoggedInUserPosts = async (req, res) => {
 
 
 
-
 export const toggleLike = async (request, response, next) => {
     try {
         const { id } = request.params;
@@ -181,8 +180,6 @@ export const toggleLike = async (request, response, next) => {
         return response.status(500).json({ error: "Internal server error" });
     }
 };
-
-
 
 
 export const addComment = async (request, response, next) => {

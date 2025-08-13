@@ -3,42 +3,42 @@ import axios from "axios";
 import dotenv from "dotenv";
 
 
-export const fetchAndSaveReels = async (req, res) => {
-  try {
-    const { userId } = req.body;
+// export const fetchAndSaveReels = async (req, res) => {
+//   try {
+//     const { userId } = req.body;
 
-    const { data } = await axios.get("https://api.pexels.com/videos/search", {
-      headers: {
-        Authorization: process.env.PEXELS_API_KEY,
-      },
-      params: {
-        query: "trending",
-      },
-    });
+//     const { data } = await axios.get("https://api.pexels.com/videos/search", {
+//       headers: {
+//         Authorization: process.env.PEXELS_API_KEY,
+//       },
+//       params: {
+//         query: "trending",
+//       },
+//     });
 
-    const savedReels = await Promise.all(
-      data.videos.map(async (video) => {
-        const videoFile = video.video_files.find(f => f.quality === "hd") || video.video_files[0];
+//     const savedReels = await Promise.all(
+//       data.videos.map(async (video) => {
+//         const videoFile = video.video_files.find(f => f.quality === "hd") || video.video_files[0];
 
-        const newReel = new Reel({
-          title: video.user.name,
-          description: `${video.duration}s video`,
-          videoUrl: videoFile.link,
-          createdBy: userId,
-        });
+//         const newReel = new Reel({
+//           title: video.user.name,
+//           description: `${video.duration}s video`,
+//           videoUrl: videoFile.link,
+//           createdBy: userId,
+//         });
 
-        return await newReel.save();
-      })
-    );
+//         return await newReel.save();
+//       })
+//     );
 
-    res.status(201).json({
-      reels: savedReels,
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
+//     res.status(201).json({
+//       reels: savedReels,
+//     });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// };
 
 
 export const getAllReels = async (req, res) => {
@@ -73,25 +73,43 @@ export const getReelById = async (req, res) => {
 
 export const createReel = async (req, res) => {
   try {
-    const { title, description, videoUrl, createdBy } = req.body;
+    const createdBy = req.user._id; 
+    const { description } = req.body;
+
+    if (!description) {
+      return res.status(400).json({ error: "Description is required" });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({ error: "Video file is required" });
+    }
+
+    const videoUrl = `${req.protocol}://${req.get('host')}/public/reel/${req.file.filename}`;
+
 
     const newReel = new Reel({
-      title,
       description,
       videoUrl,
       createdBy
     });
 
     const savedReel = await newReel.save();
-    const populatedReel = await Reel.findById(savedReel._id)
-      .populate("createdBy", "name email");
 
-    res.status(201).json(populatedReel);
+    const populatedReel = await Reel.findById(savedReel._id)
+      .populate("createdBy", "name email username");
+
+    res.status(201).json({
+      success: true,
+      message: "Reel created successfully",
+      reel: populatedReel
+    });
+
   } catch (err) {
-    console.log(err);
+    console.error("Error creating reel:", err);
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
 
 
 export const deleteReel = async (req, res) => {

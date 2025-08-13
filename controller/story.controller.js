@@ -25,11 +25,11 @@ export const getStoryById = async (req, res) => {
                     path: 'profile'
                 }
             });
-            
+
         if (!story) {
             return res.status(404).json({ error: "Story not found" });
         }
-        
+
         res.status(200).json(story);
     } catch (err) {
         console.error("Error:", err.message);
@@ -45,30 +45,34 @@ export const createStory = async (req, res) => {
             return res.status(400).json({ error: "No file uploaded" });
         }
 
-        // console.log("File saved at:", req.file.path);
-        // console.log("File exists:", fs.existsSync(req.file.path));
-        // console.log("Filename:", req.file.filename);
+        console.log("Cloudinary upload result:", req.file);
 
-        const filePath = `/uploads/story/${req.file.filename}`;
+        const fileUrl = req.file.path;
+        const fileType = req.file.mimetype.split("/")[0];
 
         const story = new Story({
             author: req.user._id,
             media: {
-                type,
+                type: type || fileType,
                 duration: duration || 15,
-                url: filePath
+                url: fileUrl
             }
         });
 
         const saved = await story.save();
-        res.status(201).json({ message: "Story created", story: saved });
+
+        console.log("Story saved with URL:", fileUrl);
+
+        res.status(201).json({
+            message: "Story created",
+            story: saved
+        });
 
     } catch (err) {
         console.error("Error:", err.message);
         res.status(500).json({ error: "Internal server error" });
     }
 };
-
 
 export const deleteStory = async (req, res) => {
     try {
