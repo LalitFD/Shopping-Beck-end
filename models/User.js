@@ -48,6 +48,8 @@ const userSchema = new mongoose.Schema({
         ref: 'Post'
     }],
 
+    verificationToken: String,
+
 }, { versionKey: false });
 
 export const User = mongoose.model("User", userSchema)

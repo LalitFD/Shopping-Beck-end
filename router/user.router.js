@@ -19,8 +19,11 @@ router.post("/login", login);
 router.get("/logout", logOut);
 
 // Email Verification
-router.post("/verification", userVerified);
+// GET route for email links (mobile compatible)
+router.get("/verification", userVerified);
 
+// POST route for API calls
+router.post("/verification", userVerified);
 router.post("/profile", auth, upload.single("imageName"), ProfileUpload);
 
 

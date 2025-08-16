@@ -84,43 +84,41 @@ export const generateToken = (user) => {
 
 
 
-export const sendEmail = (name, email) => {
+export const sendEmail = (name, email, token) => {
     let transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-            user: process.env.mail_id,  // lalitdoriya7gmmail.com
-            pass: process.env.mail_password   // 
+            user: process.env.mail_id,
+            pass: process.env.mail_password
         }
     });
+    // const verifyUrl = `http://localhost:3000/verification?token=${token}&email=${email}`;
 
-    console.log(email);
+    const verifyUrl = `https://shopping-beck-end.onrender.com/verification?token=${token}&email=${email}`;
 
     let mailOptions = {
         from: process.env.mail_id,
         to: email,
-        subject: 'Verified Your Account 😊 ',
-        html: `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px; background-color: #f9f9f9;">
-  <h2 style="color: #333;">Hello, ${name}</h2>
-  <p style="font-size: 16px; color: #555;">
-    Thank you for registering with us! Please click the button below to verify your account:
-  </p>
-<form method="post" action="https://shopping-beck-end.onrender.com/verification" style="text-align: center; margin-top: 20px;">
-
-    <input type="hidden" name="email" value="${email}" />
-    <button type="submit" style="padding: 12px 24px; background-color: #007bff; color: #fff; font-size: 16px; border: none; border-radius: 6px; cursor: pointer;">
-      Verify Your Account
-    </button>
-  </form>
-
-  <p style="font-size: 14px; color: #777; margin-top: 30px;">
-    If you did not register for this account, you can ignore this email.
-  </p>
-
-  <p style="font-size: 14px; color: #333;">
-    Best regards,<br />
-    <strong>E-commerce Creator</strong>
-  </p>
-</div>`
+        subject: 'Verify Your Account 😊',
+        html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px; background-color: #f9f9f9;">
+          <h2 style="color: #333;">Hello, ${name}</h2>
+          <p style="font-size: 16px; color: #555;">
+            Thank you for registering with us! Please click the button below to verify your account:
+          </p>
+          <a href="${verifyUrl}" 
+             style="display: inline-block; padding: 12px 24px; background-color: #007bff; color: #fff; 
+                    font-size: 16px; border-radius: 6px; text-decoration: none; margin-top: 20px;">
+            Verify Your Account
+          </a>
+          <p style="font-size: 14px; color: #777; margin-top: 30px;">
+            If you did not register for this account, you can ignore this email.
+          </p>
+          <p style="font-size: 14px; color: #333;">
+            Best regards,<br />
+            <strong>E-commerce Creator</strong>
+          </p>
+        </div>`
     };
 
     transporter.sendMail(mailOptions, function (error, info) {
@@ -132,19 +130,118 @@ export const sendEmail = (name, email) => {
     });
 }
 
+
 export const userVerified = async (request, response, next) => {
     try {
-        let { email } = request.body; // doriyalalit8@gmail.com/ 
-        email = email.trim().replace(/\/$/, '');
+        // GET aur POST dono handle karo
+        let { email, token } = request.method === 'GET' ? request.query : request.body;
 
-        console.log("Email received:", email);
+        // Email clean karo
+        email = email ? email.trim().replace(/\/$/, '') : null;
 
-        let v = await User.updateOne({ email }, { $set: { isVerified: true } });
-        return response.status(200).json({ message: "User verified success", v });
+        console.log("Verification attempt:", { email, token, method: request.method });
+
+        // Validation
+        if (!email || !token) {
+            return response.status(400).json({
+                error: "Email and token are required"
+            });
+        }
+
+        // User find karo with email and token
+        const user = await User.findOne({
+            email,
+            verificationToken: token
+        });
+
+        if (!user) {
+            // GET request hai to HTML response do, POST hai to JSON
+            if (request.method === 'GET') {
+                return response.status(400).send(`
+                   <div style="text-align: center; padding: 50px; font-family: Arial, sans-serif;">
+                       <h2 style="color: red;">❌ Invalid or Expired Verification Link</h2>
+                       <p>The verification link is invalid or has already been used.</p>
+                       <p>Please request a new verification email.</p>
+                   </div>
+               `);
+            } else {
+                return response.status(400).json({
+                    error: "Invalid or expired verification token"
+                });
+            }
+        }
+
+        // User already verified hai?
+        if (user.isVerified) {
+            if (request.method === 'GET') {
+                return response.status(200).send(`
+                   <div style="text-align: center; padding: 50px; font-family: Arial, sans-serif;">
+                       <h2 style="color: blue;">ℹ️ Account Already Verified</h2>
+                       <p>Your account is already verified. You can login now.</p>
+                   </div>
+               `);
+            } else {
+                return response.status(200).json({
+                    message: "Account already verified"
+                });
+            }
+        }
+
+        // User verify karo
+        const updateResult = await User.updateOne(
+            { email, verificationToken: token },
+            {
+                $set: { isVerified: true },
+                $unset: { verificationToken: 1 }  // Token remove karo
+            }
+        );
+
+        if (updateResult.matchedCount === 0) {
+            return response.status(400).json({
+                error: "Verification failed"
+            });
+        }
+
+        console.log("User verified successfully:", email);
+
+        // Success response
+        if (request.method === 'GET') {
+            return response.status(200).send(`
+               <div style="text-align: center; padding: 50px; font-family: Arial, sans-serif;">
+                   <h2 style="color: green;">✅ Account Verified Successfully!</h2>
+                   <p>Congratulations! Your account has been verified.</p>
+                   <p>You can now login to your account.</p>
+                   <div style="margin-top: 30px;">
+                       <a href="your-app-login-url" 
+                          style="background: #007bff; color: white; padding: 12px 24px; 
+                                 text-decoration: none; border-radius: 5px; font-size: 16px;">
+                           Login Now
+                       </a>
+                   </div>
+               </div>
+           `);
+        } else {
+            return response.status(200).json({
+                message: "User verified successfully",
+                success: true
+            });
+        }
 
     } catch (err) {
-        console.log(err);
-        return response.status(500).json({ error: "Internal server error" });
+        console.error("Verification error:", err);
+
+        if (request.method === 'GET') {
+            return response.status(500).send(`
+               <div style="text-align: center; padding: 50px; font-family: Arial, sans-serif;">
+                   <h2 style="color: red;">⚠️ Server Error</h2>
+                   <p>Something went wrong. Please try again later.</p>
+               </div>
+           `);
+        } else {
+            return response.status(500).json({
+                error: "Internal server error"
+            });
+        }
     }
 };
 
@@ -225,7 +322,6 @@ export const register = async (request, response, next) => {
         });
 
         if (existingUser) {
-
             return response.status(400).json({
                 message: "User with this email or username already exists"
             });
@@ -234,15 +330,37 @@ export const register = async (request, response, next) => {
         let saltKey = bcrypt.genSaltSync(12);
         password = bcrypt.hashSync(password, saltKey);
 
-        await sendEmail(name, email);
+        // VERIFICATION TOKEN GENERATE KARO
+        const verificationToken = Math.random().toString(36).substring(2, 15) +
+            Math.random().toString(36).substring(2, 15);
+
+        // Ya JWT use karo (better option)
+        // const verificationToken = jwt.sign(
+        //     { email, purpose: 'verification' },
+        //     process.env.JWT_SECRET,
+        //     { expiresIn: '24h' }
+        // );
 
         let newUser = await User.create({
             name,
             email,
             password,
-            username
+            username,
+            verificationToken  // Token save karo database mein
         });
-        return response.status(201).json({ message: "user created", user: newUser });
+
+        // EMAIL SEND KARO WITH TOKEN
+        await sendEmail(name, email, verificationToken);  // Token pass karo
+
+        return response.status(201).json({
+            message: "User created. Check your email for verification",
+            user: {
+                name: newUser.name,
+                email: newUser.email,
+                username: newUser.username
+            }
+        });
+
     } catch (err) {
         console.log(err);
         return response.status(500).json({ message: "Internal server error" });
