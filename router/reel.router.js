@@ -2,7 +2,7 @@ import express from "express";
 import multer from "multer";
 import path from "path";
 import { getAllReels, getReelById, createReel, deleteReel } from "../controller/reel.controller.js";
-import {auth} from "../middleware/auth.js"
+import { auth } from "../middleware/auth.js"
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -34,7 +34,7 @@ const rrouter = express.Router();
 
 rrouter.get("/reels", getAllReels);
 rrouter.get("/reels/:id", getReelById);
-rrouter.post("/reels", auth, upload.single("videoUrl"), createReel);
+rrouter.post("/reels", auth, upload.single("video"), createReel);
 rrouter.delete("/reels/:id", auth, deleteReel);
 
 export default rrouter;

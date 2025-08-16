@@ -86,7 +86,6 @@ export const createReel = async (req, res) => {
 
     const videoUrl = `${req.protocol}://${req.get('host')}/public/reel/${req.file.filename}`;
 
-
     const newReel = new Reel({
       description,
       videoUrl,
