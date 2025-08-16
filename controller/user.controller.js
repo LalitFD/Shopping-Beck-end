@@ -340,11 +340,12 @@ export const register = async (request, response, next) => {
             email,
             password,
             username,
-            verificationToken  // Token save karo database mein
+            isVerified: false,
+            verificationToken
         });
 
         // EMAIL SEND KARO WITH TOKEN
-        await sendEmail(name, email, verificationToken);  // Token pass karo
+        await sendEmail(name, email, verificationToken);
 
         return response.status(201).json({
             message: "User created. Check your email for verification",
