@@ -79,7 +79,7 @@ export const createPost = async (req, res) => {
             return res.status(400).json({ error: "Media file required" });
         }
 
-        console.log('Cloudinary upload result:', req.file); 
+        console.log('Cloudinary upload result:', req.file);
 
         const fileType = req.file.mimetype.split("/")[0];
         const fileUrl = req.file.path;
@@ -87,25 +87,25 @@ export const createPost = async (req, res) => {
         const post = new Post({
             author: req.user._id,
             caption: req.body.caption || "",
-            media: [{ 
-                type: fileType, 
-                url: fileUrl  
+            media: [{
+                type: fileType,
+                url: fileUrl
             }],
             tags: req.body.tags ? JSON.parse(req.body.tags) : []
         });
 
         const saved = await post.save();
-        
-        console.log('Post saved with URL:', fileUrl); // Debug
-        
-        res.status(201).json({ 
-            message: "Post created", 
-            post: saved 
+
+        console.log('Post saved with URL:', fileUrl);
+
+        res.status(201).json({
+            message: "Post created",
+            post: saved.toObject()
         });
 
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "Server error" });
+        console.error(err.message);
+        res.status(500).json({ error: err.message });
     }
 };
 
@@ -132,7 +132,7 @@ export const deletePost = async (request, response, next) => {
 // GET /api/posts/user/:id - Get user's posts
 export const getLoggedInUserPosts = async (req, res) => {
     try {
-        const userId = req.user._id; 
+        const userId = req.user._id;
 
         const posts = await Post.find({ author: userId })
             .populate('author', 'name username profilePicture')
