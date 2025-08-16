@@ -73,7 +73,7 @@ export const getReelById = async (req, res) => {
 
 export const createReel = async (req, res) => {
   try {
-    const createdBy = req.user._id; 
+    const createdBy = req.user._id;
     const { description } = req.body;
 
     if (!description) {
@@ -84,7 +84,10 @@ export const createReel = async (req, res) => {
       return res.status(400).json({ error: "Video file is required" });
     }
 
-    const videoUrl = `${req.protocol}://${req.get('host')}/public/reel/${req.file.filename}`;
+    // ✅ Cloudinary file ka URL yaha milega
+    console.log("Cloudinary upload result:", req.file);
+
+    const videoUrl = req.file.path; // 👈 local path ki jagah cloudinary URL
 
     const newReel = new Reel({
       description,
@@ -108,6 +111,7 @@ export const createReel = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
 
 
 
