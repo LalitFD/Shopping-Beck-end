@@ -36,7 +36,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.get("/users", async (req, res) => {
     try {
-        const users = await User.find({}, "username email");
+        const users = await User.find({}, "username email name isVerified");
         res.json(users);
     } catch (err) {
         res.status(500).json({ error: err.message });
