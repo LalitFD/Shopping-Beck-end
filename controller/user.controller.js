@@ -116,7 +116,7 @@ export const sendEmail = (name, email, token) => {
           </p>
           <p style="font-size: 14px; color: #333;">
             Best regards,<br />
-            <strong>E-commerce Creator</strong>
+            <strong>Social Media - Lalit ✌️</strong>
           </p>
         </div>`
     };
@@ -211,13 +211,7 @@ export const userVerified = async (request, response, next) => {
                    <h2 style="color: green;">✅ Account Verified Successfully!</h2>
                    <p>Congratulations! Your account has been verified.</p>
                    <p>You can now login to your account.</p>
-                   <div style="margin-top: 30px;">
-                       <a href="your-app-login-url" 
-                          style="background: #007bff; color: white; padding: 12px 24px; 
-                                 text-decoration: none; border-radius: 5px; font-size: 16px;">
-                           Login Now
-                       </a>
-                   </div>
+
                </div>
            `);
         } else {
