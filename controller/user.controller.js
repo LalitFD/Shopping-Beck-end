@@ -93,7 +93,7 @@ export const sendEmail = (name, email, token) => {
         }
     });
     // const verifyUrl = `http://localhost:3000/verification?token=${token}&email=${email}`;
-
+    
     const verifyUrl = `https://shopping-beck-end.onrender.com/verification?token=${token}&email=${email}`;
 
     let mailOptions = {

@@ -19,3 +19,4 @@ export const auth = async (request, response, next) => {
         return response.status(401).json({ error: "Unauthorized user | Invalid token" });
     }
 };
+    

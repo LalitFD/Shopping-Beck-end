@@ -16,7 +16,7 @@ const postSchema = new mongoose.Schema({
             required: true
         },
         url: {
-            type: String,   // yeh field add karo
+            type: String,
             required: true
         }
     }],
