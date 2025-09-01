@@ -409,8 +409,8 @@ export const searchUsers = async (req, res) => {
 
 export const followUnfollow = async (req, res) => {
     try {
-        const currentUserId = req.user._id; // token se
-        const targetUserId = req.params.id; // params se
+        const currentUserId = req.user._id; 
+        const targetUserId = req.params.id; 
 
         if (currentUserId.toString() === targetUserId.toString()) {
             return res.status(400).json({ message: "You can't follow yourself" });
@@ -482,7 +482,6 @@ export const followUnfollow = async (req, res) => {
 
 
 
-// controller/user.controller.js
 export const getFollowersAndFollowing = async (req, res) => {
     try {
         const user = await User.findById(req.user._id)

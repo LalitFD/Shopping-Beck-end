@@ -1,9 +1,10 @@
 import express from "express";
-
 import multer from "multer";
 import { auth } from "../middleware/auth.js";
 import { getAllPosts, getPost, createPost, toggleLike, addComment, deletePost, getLoggedInUserPosts } from "../controller/post.controller.js";
 import uploads from "../middleware/uploadPost.js";
+
+
 // import uploads from "../middleware/uploadPost.js";
 // const upload = multer({ dest: "public/post" })
 

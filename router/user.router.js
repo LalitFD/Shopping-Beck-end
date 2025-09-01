@@ -9,25 +9,18 @@ const router = express.Router();
 const upload = multer({ dest: "public/profile" })
 
 
-// Register
 router.post("/register", register);
 
-// Login
 router.post("/login", login);
 
-// Logout
 router.get("/logout", logOut);
 
-// Email Verification
-// GET route for email links (mobile compatible)
 router.get("/verification", userVerified);
 
-// POST route for API calls
 router.post("/verification", userVerified);
 router.post("/profile", auth, upload.single("imageName"), ProfileUpload);
 
 
-// Profile (protected route)
 router.get("/profile", auth, userProfile);
 
 router.put("/update", auth, profileUpdate);

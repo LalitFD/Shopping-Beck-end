@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 export const createMessage = async (req, res) => {
     try {
         const senderId = req.user._id;
-        const { receiverId } = req.params; // ✅ Fixed: Extract receiverId properly
+        const { receiverId } = req.params; 
         const { text } = req.body;
 
         if (!senderId || !receiverId || !text?.trim()) {

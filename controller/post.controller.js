@@ -69,6 +69,8 @@ export const getPost = async (request, response, next) => {
 //     }
 // };
 
+
+
 export const createPost = async (req, res) => {
     try {
         if (!req.user || !req.user._id) {

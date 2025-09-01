@@ -9,4 +9,4 @@ MRouter.post("/messages/:receiverId", auth, createMessage);
 MRouter.get("/message/:messageId", getMessageById);
 MRouter.get("/chat/:senderId/:receiverId", getChatHistory);
 
-export default MRouter;
+export default MRouter; 
