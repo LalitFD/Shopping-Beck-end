@@ -205,3 +205,51 @@ export const addComment = async (request, response, next) => {
         return response.status(500).json({ error: "Internal server error" });
     }
 };
+
+
+
+export const getPostComments = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const post = await Post.findById(id)
+            .populate('comments.user', 'name username profilePicture');
+
+        if (!post) {
+            return res.status(404).json({ error: "Post not found" });
+        }
+
+        return res.status(200).json({
+            message: "All comments fetched successfully",
+            comments: post.comments
+        });
+
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+
+
+export const getPostLikes = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const post = await Post.findById(id)
+            .populate('likes.user', 'name username profilePicture'); 
+
+        if (!post) {
+            return res.status(404).json({ error: "Post not found" });
+        }
+
+        return res.status(200).json({
+            message: "All likes fetched successfully",
+            likes: post.likes
+        });
+
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+};

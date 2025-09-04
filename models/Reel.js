@@ -10,7 +10,7 @@ const reelSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    views: {
+    views: {    
         type: Number,
         default: 0
     },

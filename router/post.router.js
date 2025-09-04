@@ -1,7 +1,7 @@
 import express from "express";
 import multer from "multer";
 import { auth } from "../middleware/auth.js";
-import { getAllPosts, getPost, createPost, toggleLike, addComment, deletePost, getLoggedInUserPosts } from "../controller/post.controller.js";
+import { getAllPosts, getPost, createPost, toggleLike, getPostLikes, getPostComments, addComment, deletePost, getLoggedInUserPosts } from "../controller/post.controller.js";
 import uploads from "../middleware/uploadPost.js";
 
 
@@ -22,6 +22,9 @@ Prouter.put("/like/:id", auth, toggleLike)
 Prouter.post("/comment/:id", auth, addComment);
 Prouter.delete("/deletePost/:id", auth, deletePost)
 Prouter.get("/getPost", auth, getLoggedInUserPosts)
+
+Prouter.get("/getComments/:id", getPostComments);
+Prouter.get("/getLike/:id", getPostLikes)
 
 
 

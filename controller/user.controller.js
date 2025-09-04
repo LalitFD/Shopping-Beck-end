@@ -501,3 +501,40 @@ export const getFollowersAndFollowing = async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 };
+
+
+
+export const discoverUsers = async (req, res) => {
+    try {
+        const { query } = req.query;
+        const currentUserId = req.user._id;
+
+        // Search users by name, username, or bio
+        const users = await User.find({
+            $or: [
+                { name: { $regex: query, $options: 'i' } },
+                { username: { $regex: query, $options: 'i' } },
+                { "profile.bio": { $regex: query, $options: 'i' } }
+            ],
+            _id: { $ne: currentUserId } // Exclude current user
+        }).select("name username profile.bio profile.imageName");
+
+        // Current user ki following list get karo
+        const currentUser = await User.findById(currentUserId).populate("following", "_id");
+        const followingIds = currentUser.following.map(f => f._id.toString());
+
+        // Check karo ki each user followed hai ya nahi
+        const usersWithFollowStatus = users.map(user => ({
+            _id: user._id,
+            name: user.name,
+            username: user.username,
+            bio: user.profile?.bio || "",
+            isFollowed: followingIds.includes(user._id.toString())
+        }));
+
+        res.json({ users: usersWithFollowStatus });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server error" });
+    }
+};
