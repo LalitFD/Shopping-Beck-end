@@ -10,7 +10,6 @@ export const auth = async (request, response, next) => {
         if (!token) {
             return response.status(401).json({ message: "Unauthorized user. No token provided." });
         }
-
         let decode = jwt.verify(token, process.env.secure_key);
         request.user = decode;
         next();
